@@ -67,8 +67,8 @@ router.post("/payment", verifyToken, async (req, res) => {
       line_items: line_items,
       customer: customer.id,
       mode: "payment",
-      success_url: `${process.env.CLIENT_URL}/success`,
-      cancel_url: `${process.env.CLIENT_URL}/cart`,
+      success_url: `${process.env.STRIPE_URL}/success`,
+      cancel_url: `${process.env.STRIPE_URL}/cart`,
     });
 
     res.send({ url: session.url });
