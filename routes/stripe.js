@@ -1,15 +1,26 @@
 const express = require("express");
 const Order = require("../models/Order");
+const dotenv = require("dotenv");
+
+
+
 
 const { verifyToken } = require("../verifyToken");
 const router = express.Router();
-const KEY = process.env.STRIPE_SECRET_KEY_MY;
+const KEY = process.env.MONGO_URL;
+console.log({"key:":KEY});
 const stripe = require("stripe")(
   "sk_test_51M0iNJEVh4wUNDFXckLHggev0s0oqMqu3EXCZB429SzjBKm1by4ucNEEa7MeZSXEcUW7ZBggD1Lidb1gf7APU4Yg00EZZc2f2d"
 );
-const YOUR_DOMAIN = "http://localhost:3000";
 
-router.post("/payment", async (req, res) => {
+
+const CLIENT = dotenv.config().parsed.CLIENT_URL
+
+
+
+
+
+router.post("/payment", verifyToken,async (req, res) => {
   const cartItems = req.body.cartItems.map((item) => {
     return {
       quantity: item.quantity,
@@ -70,8 +81,8 @@ router.post("/payment", async (req, res) => {
       line_items: line_items,
       customer: customer.id,
       mode: "payment",
-      success_url: `${YOUR_DOMAIN}/success`,
-      cancel_url: `${YOUR_DOMAIN}/cart`,
+      success_url: `${CLIENT}/success`,
+      cancel_url: `${CLIENT}/cart`,
     });
    
     res.send({ url: session.url });

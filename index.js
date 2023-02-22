@@ -11,7 +11,7 @@ const orderRoutes = require("./routes/order");
 const stripeRoutes = require("./routes/stripe");
 
 
-dotenv.config();
+dotenv.config()
 
 const app = express();
 
