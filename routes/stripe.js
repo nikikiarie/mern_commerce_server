@@ -1,26 +1,12 @@
 const express = require("express");
 const Order = require("../models/Order");
-const dotenv = require("dotenv");
-
-
-
+console.log(process.env.STRIPE_SECRET_KEY_MY);
 
 const { verifyToken } = require("../verifyToken");
 const router = express.Router();
-const KEY = process.env.MONGO_URL;
-console.log({"key:":KEY});
-const stripe = require("stripe")(
-  "sk_test_51M0iNJEVh4wUNDFXckLHggev0s0oqMqu3EXCZB429SzjBKm1by4ucNEEa7MeZSXEcUW7ZBggD1Lidb1gf7APU4Yg00EZZc2f2d"
-);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_MY);
 
-
-const CLIENT = dotenv.config().parsed.CLIENT_URL
-
-
-
-
-
-router.post("/payment", verifyToken,async (req, res) => {
+router.post("/payment", verifyToken, async (req, res) => {
   const cartItems = req.body.cartItems.map((item) => {
     return {
       quantity: item.quantity,
@@ -81,10 +67,10 @@ router.post("/payment", verifyToken,async (req, res) => {
       line_items: line_items,
       customer: customer.id,
       mode: "payment",
-      success_url: `${CLIENT}/success`,
-      cancel_url: `${CLIENT}/cart`,
+      success_url: `${process.env.CLIENT_URL}/success`,
+      cancel_url: `${process.env.CLIENT_URL}/cart`,
     });
-   
+
     res.send({ url: session.url });
   } catch (err) {
     res.status(500).send({ mg: err });
@@ -132,14 +118,12 @@ router.post(
 
     try {
       event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-console.log(event);
+      console.log(event);
 
       if (event.type === "checkout.session.completed") {
         stripe.customers
           .retrieve(event.data.object.customer)
           .then((customer) => {
-            
-
             createOrder(customer, event.data.object);
           });
       }
