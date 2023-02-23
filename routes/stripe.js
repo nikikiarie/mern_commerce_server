@@ -15,7 +15,7 @@ router.post("/payment", verifyToken, async (req, res) => {
       price: item.price,
     };
   });
-  console.log(cartItems);
+ 
 
   // create a  Stripe customer
 
@@ -44,7 +44,7 @@ router.post("/payment", verifyToken, async (req, res) => {
       quantity: item.quantity,
     };
   });
-  console.log(line_items);
+  
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -118,12 +118,14 @@ router.post(
 
     try {
       event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-      console.log(event);
+      console.log({"event ":event,"eventTYpe":event.type});
 
       if (event.type === "checkout.session.completed") {
         stripe.customers
           .retrieve(event.data.object.customer)
+
           .then((customer) => {
+            console.log({"customer":customer});
             createOrder(customer, event.data.object);
           });
       }
